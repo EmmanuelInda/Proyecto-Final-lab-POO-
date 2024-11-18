@@ -1,0 +1,32 @@
+# Ignore compiled class files and output directory
+*.class
+
+# Ignore the output directory
+out/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+*.swo
+*.~*
+
+# Ignore generated files from IDEs
+.idea/
+*.iml
+.vscode/
+*.project
+*.classpath
+
+# Ignore other build artifacts
+target/
+bin/
+
+# Ignore OS-specific files
+*.DS_Store
+._*
