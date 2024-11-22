@@ -1,4 +1,4 @@
-package game;
+package game.words;
 
 public class FileWordProvider {
 }

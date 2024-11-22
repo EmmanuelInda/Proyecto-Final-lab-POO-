@@ -1,11 +1,10 @@
 package ui;
 
-import game.Feedback;
+import game.Table;
 
 public interface GameUI {
-	void displayTable();
+	void displayTable(Table table);
 	void displayMessage(String msg);
-	void displayFeedback(Feedback feedback);
 	String getUserInput();
 }
 

@@ -1,15 +1,23 @@
+import ui.GameUI;
 import ui.WindowUI;
+import ui.ConsoleUI;
+
 import game.Game;
 
 public class Main {
 	public static void main(String[] args) {
-		System.setProperty("sun.java2d.uiScale", "1");
-		System.setProperty("sun.java2d.dpiaware", "true");
+		String mode = (args.length == 0) ? "window" : args[0].toLowerCase();
 
-		Game game = new Game();
-		WindowUI windowUI = new WindowUI();
+		GameUI ui = switch (mode) {
+			case "console" -> new ConsoleUI();
+			case "window" -> new WindowUI();
+			default -> {
+				System.err.println("Invalid option.");
+				System.exit(1);
+				yield null;
+			}
+		};
 
-		game.hello();
+		new Game(ui);
 	}
 }
-
