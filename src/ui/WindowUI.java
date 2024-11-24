@@ -15,7 +15,6 @@ public class WindowUI extends JFrame implements GameUI {
 
 	private String input;
 	private boolean send;
-	private static int row = 0;
 
 	private Game game;
 
@@ -66,17 +65,16 @@ public class WindowUI extends JFrame implements GameUI {
 
 	@Override
 	public void displayTable(Table table) {
-		if (table != null)
-			row = table.getRow();
-
-		System.out.println("Input: " + input);
+		int row = table.getRow();
 
 		for (int i = 0; i < 5; ++i) {
 			JPanel cell = (JPanel) pnl_table.getComponent(row * 5 + i);
 			cell.removeAll();
+
 			if (i < input.length()) {
 				cell.add(new JLabel(String.valueOf(input.charAt(i))));
 			}
+
 			cell.revalidate();
 			cell.repaint();
 		}
@@ -135,6 +133,7 @@ public class WindowUI extends JFrame implements GameUI {
 		row1.setOpaque(false);
 		for (String key : keys1) {
 			JButton btn = createKeyButton(key, keyBackground, keyTextColor, keyFont, keySize);
+			btn.addActionListener(new KeyButtonListener(key));
 			row1.add(btn);
 		}
 		pnl_keyboard.add(row1);
@@ -149,6 +148,7 @@ public class WindowUI extends JFrame implements GameUI {
 
 		for (String key : keys2) {
 			JButton btn = createKeyButton(key, keyBackground, keyTextColor, keyFont, keySize);
+			btn.addActionListener(new KeyButtonListener(key));
 			row2.add(btn);
 		}
 
@@ -159,14 +159,17 @@ public class WindowUI extends JFrame implements GameUI {
 		row3.setOpaque(false);
 
 		JButton btnEnter = createKeyButton("Send", keyBackground, keyTextColor, keyFont, new Dimension(75, 50));
+		btnEnter.addActionListener(new EnterButtonListener());
 		row3.add(btnEnter);
 
 		for (String key : keys3) {
 			JButton btn = createKeyButton(key, keyBackground, keyTextColor, keyFont, keySize);
+			btn.addActionListener(new KeyButtonListener(key));
 			row3.add(btn);
 		}
 
 		JButton btnBackspace = createKeyButton("←", keyBackground, keyTextColor, keyFont, new Dimension(75, 50));
+		btnBackspace.addActionListener(new BackspaceButtonListener());
 		row3.add(btnBackspace);
 
 		pnl_keyboard.add(row3);
@@ -195,21 +198,20 @@ public class WindowUI extends JFrame implements GameUI {
 		public void actionPerformed(ActionEvent e) {
 			if (input.length() < 5) {
 				input += key;
-				System.out.print("Key: " + key);
-				displayTable(null);
+				displayTable(game.getTable());
 			}
 		}
 	}
 
-/*	private class BackspaceButtonListener implements ActionListener {
+	private class BackspaceButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (currentWord.length() > 0) {
-				currentWord = currentWord.substring(0, currentWord.length() - 1);
-				updateTable();
-			}
+//			if (currentWord.length() > 0) {
+//				currentWord = currentWord.substring(0, currentWord.length() - 1);
+//				updateTable();
+//			}
 		}
-	}*/
+	}
 
 	private class EnterButtonListener implements ActionListener {
 		@Override
