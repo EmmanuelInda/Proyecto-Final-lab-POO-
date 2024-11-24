@@ -1,58 +1,54 @@
 package game;
 
-import game.keys.Key;
+import game.components.Table;
+import game.data.WordProvider;
 
-import game.words.WordProvider;
+import game.logic.Feedback;
+import game.logic.Feedback.GameStatus;
 
-import ui.GameUI;
-
-import java.util.List;
-import java.util.ArrayList;
+import static game.logic.Feedback.GameStatus;
 
 public class Game {
 	private String targetWord;
-	private int maxAttempts;
-//	private List<UserWord> attempts;
-	private GameUI ui;
-	private boolean isGameOver;
-
+	private int attempts;
+	private final int maxAttempts = 6;
+	private GameStatus status;
 	private Table table;
 
-	public Game(GameUI ui) {
+	public Game() {
 		table = new Table();
-
 		targetWord = WordProvider.getRandomWord();
-
-		this.ui = ui;
-		this.isGameOver = false;
-
-		loop();
+		// this.targetWord = "hello"; /* DEBUG */
+		attempts = 0;
+		status = GameStatus.UNFINISHED;
 	}
 
-	public void loop() {
-		setup();
-		display();
+	public Table getTable() {
+		return table;
+	}
 
-		while (!isGameOver) {
-			input();
-			update();
-			display();
+	public GameStatus getStatus() {
+		return status;
+	}
+
+	public int getAttempts() {
+		return attempts;
+	}
+
+	public String getTargetWord() {
+		return targetWord;
+	}
+
+	public void makeAttempt(String userWord) {
+		this.attempts++;
+
+		int[] result = Feedback.getFeedback(targetWord, userWord);
+		this.status = Feedback.checkResult(result);
+
+		table.updateRow(userWord, result);
+
+		if (attempts == maxAttempts && this.status != GameStatus.WIN) {
+			this.status = GameStatus.LOSE;
 		}
 	}
-
-	public void setup() {
-		targetWord = "hello";
-	}
-
-	public void input() {
-		ui.getUserInput();
-	}
-
-	public void update() {
-	}
-
-	public void display() {
-		ui.displayTable(table);
-	}
 }
-

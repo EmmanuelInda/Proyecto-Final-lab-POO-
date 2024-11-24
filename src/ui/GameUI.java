@@ -1,10 +1,11 @@
 package ui;
 
-import game.Table;
+import game.components.Table;
 
 public interface GameUI {
 	void displayTable(Table table);
-	void displayMessage(String msg);
-	String getUserInput();
+	void displayWinMessage();
+	void displayLoseMessage(String word);
+	String getUserWord();
 }
 
