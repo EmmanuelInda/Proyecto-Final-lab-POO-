@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class WindowUI extends JFrame implements GameUI {
 	private JPanel pnl_main;
@@ -31,6 +33,10 @@ public class WindowUI extends JFrame implements GameUI {
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setVisible(true);
+
+		this.addKeyListener(new KeyboardInputListener());
+		this.setFocusable(true);
+		this.requestFocusInWindow();
 	}
 
 	public void setComponents() {
@@ -64,7 +70,8 @@ public class WindowUI extends JFrame implements GameUI {
 	}
 
 	@Override
-	public void displayTable(Table table) {
+	public void displayTable() {
+		Table table = game.getTable();
 		int row = table.getRow();
 
 		for (int i = 0; i < 5; ++i) {
@@ -72,7 +79,19 @@ public class WindowUI extends JFrame implements GameUI {
 			cell.removeAll();
 
 			if (i < input.length()) {
-				cell.add(new JLabel(String.valueOf(input.charAt(i))));
+				JLabel lbl_letter = new JLabel(String.valueOf(input.charAt(i)));
+
+				lbl_letter.setFont(new Font("Arial", Font.BOLD, 24));
+
+				lbl_letter.setHorizontalAlignment(SwingConstants.CENTER);
+				lbl_letter.setVerticalAlignment(SwingConstants.CENTER);
+
+				cell.setLayout(new BorderLayout());
+				cell.add(lbl_letter, BorderLayout.CENTER);
+
+				cell.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+			} else {
+				cell.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 			}
 
 			cell.revalidate();
@@ -198,7 +217,7 @@ public class WindowUI extends JFrame implements GameUI {
 		public void actionPerformed(ActionEvent e) {
 			if (input.length() < 5) {
 				input += key;
-				displayTable(game.getTable());
+				displayTable();
 			}
 		}
 	}
@@ -206,10 +225,10 @@ public class WindowUI extends JFrame implements GameUI {
 	private class BackspaceButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-//			if (currentWord.length() > 0) {
-//				currentWord = currentWord.substring(0, currentWord.length() - 1);
-//				updateTable();
-//			}
+			if (input.length() > 0) {
+				input = input.substring(0, input.length() - 1);
+				displayTable();
+			}
 		}
 	}
 
@@ -219,6 +238,31 @@ public class WindowUI extends JFrame implements GameUI {
 			if (input.length() == 5) {
 				send = true; 
 			}
+		}
+	}
+
+	private class KeyboardInputListener implements KeyListener {
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			char c = e.getKeyChar();
+
+			if (Character.isLetter(c) && input.length() < 5) {
+				input += Character.toUpperCase(c);
+				displayTable();
+			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && input.length() > 0) {
+				input = input.substring(0, input.length() - 1);
+				displayTable();
+			} else if (e.getKeyCode() == KeyEvent.VK_ENTER && input.length() == 5) {
+				send = true;
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
 		}
 	}
 }

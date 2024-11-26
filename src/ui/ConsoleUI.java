@@ -21,8 +21,7 @@ public class ConsoleUI implements GameUI {
 	}
 
 	public void loop() {
-		Table table = game.getTable();
-		displayTable(table);
+		displayTable();
 
 		while (game.getStatus() == GameStatus.UNFINISHED) {
 			/* Input */
@@ -32,7 +31,7 @@ public class ConsoleUI implements GameUI {
 			game.makeAttempt(userWord);
 
 			/* Display */
-			displayTable(table);
+			displayTable();
 		}
 
 		if (game.getStatus() == GameStatus.WIN) {
@@ -43,7 +42,9 @@ public class ConsoleUI implements GameUI {
 	}
 
 	@Override
-	public void displayTable(Table table) {
+	public void displayTable() {
+		Table table = game.getTable();
+
 		System.out.println(table.toString());
 	}
 

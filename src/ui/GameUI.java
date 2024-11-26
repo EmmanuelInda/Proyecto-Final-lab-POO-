@@ -3,7 +3,7 @@ package ui;
 import game.components.Table;
 
 public interface GameUI {
-	void displayTable(Table table);
+	void displayTable();
 	void displayWinMessage();
 	void displayLoseMessage(String word);
 	String getUserWord();
