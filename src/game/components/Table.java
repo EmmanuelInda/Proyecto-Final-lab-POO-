@@ -44,6 +44,14 @@ public class Table {
 		return row;
 	}
 
+	public char[][] getCells() {
+		return cells;
+	}
+
+	public Position.State[][] getColors() {
+		return colors;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();

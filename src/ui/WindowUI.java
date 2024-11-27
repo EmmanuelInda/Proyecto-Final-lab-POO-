@@ -3,12 +3,17 @@ package ui;
 import game.Game;
 import game.components.Table;
 
+import game.logic.Feedback;
+import game.logic.Feedback.GameStatus;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import game.logic.Position;
 
 public class WindowUI extends JFrame implements GameUI {
 	private JPanel pnl_main;
@@ -99,12 +104,74 @@ public class WindowUI extends JFrame implements GameUI {
 		}
 	}
 
+	public void updateRow() {
+		String userWord = input.toLowerCase();
+
+		game.makeAttempt(userWord);
+
+		Table table = game.getTable();
+		int row = table.getRow() - 1;
+		Position.State[][] colors = table.getColors();
+
+		for (int col = 0; col < 5; col++) {
+			JPanel cell = (JPanel) pnl_table.getComponent(row * 5 + col);
+			cell.removeAll();
+
+			JLabel lbl_letter = new JLabel(String.valueOf(userWord.charAt(col)).toUpperCase());
+			lbl_letter.setFont(new Font("Arial", Font.BOLD, 24));
+			lbl_letter.setHorizontalAlignment(SwingConstants.CENTER);
+			lbl_letter.setVerticalAlignment(SwingConstants.CENTER);
+			lbl_letter.setOpaque(false);
+			cell.setLayout(new BorderLayout());
+			cell.add(lbl_letter, BorderLayout.CENTER);
+
+			cell.setOpaque(true);
+
+			Position.State state = colors[col][row];
+
+
+			switch (state) {
+				case CORRECT:
+					cell.setBackground(Color.GREEN);
+					break;
+				case PRESENT:
+					cell.setBackground(Color.YELLOW);
+					break;
+				case ABSENT:
+					cell.setBackground(Color.GRAY);
+					break;
+				default:
+					cell.setBackground(Color.WHITE);
+					break;
+			}
+
+			cell.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+			cell.revalidate();
+			cell.repaint();
+		}
+
+		pnl_table.revalidate();
+		pnl_table.repaint();
+
+		if (game.getStatus() == GameStatus.UNFINISHED) {
+			input = "";
+		} else {
+			if (game.getStatus() == GameStatus.WIN) {
+				displayWinMessage();
+			} else {
+				displayLoseMessage(game.getTargetWord());
+			}
+		}
+	}
+
 	@Override
 	public void displayWinMessage() {
+		JOptionPane.showMessageDialog(this, "You win!", "Result", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override
 	public void displayLoseMessage(String word) {
+		JOptionPane.showMessageDialog(this, "You lose! Target word was: " + word);
 	}
 
 	@Override
@@ -112,29 +179,19 @@ public class WindowUI extends JFrame implements GameUI {
 		return input;
 	}
 
+
 	private void setTable() {
 		pnl_table.setLayout(new GridLayout(6, 5, 5, 5));
-
+	
 		for (int i = 0; i < 30; ++i) {
-			JPanel cell = new JPanel() {
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					Graphics2D g2d = (Graphics2D) g;
-
-					g2d.setColor(Color.LIGHT_GRAY);
-					g2d.setStroke(new BasicStroke(0.8f));
-					g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-
-					g2d.setColor(Color.WHITE);
-					g2d.fillRect(1, 1, getWidth() - 2, getHeight() - 2);
-				}
-			};
-
+			JPanel cell = new JPanel();
 			cell.setPreferredSize(new Dimension(59, 59));
+			cell.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+			cell.setBackground(Color.WHITE);
 			pnl_table.add(cell);
 		}
 	}
+
 
 	private void setKeyboard() {
 		pnl_keyboard.setLayout(new BoxLayout(pnl_keyboard, BoxLayout.Y_AXIS));
@@ -225,7 +282,7 @@ public class WindowUI extends JFrame implements GameUI {
 	private class BackspaceButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (input.length() > 0) {
+			if (input.length() > 0 && game.getStatus() == GameStatus.UNFINISHED) {
 				input = input.substring(0, input.length() - 1);
 				displayTable();
 			}
@@ -235,8 +292,9 @@ public class WindowUI extends JFrame implements GameUI {
 	private class EnterButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (input.length() == 5) {
-				send = true; 
+			if (input.length() == 5 && game.getStatus() == GameStatus.UNFINISHED) {
+				System.out.println("Enter");
+				updateRow();
 			}
 		}
 	}
@@ -250,14 +308,16 @@ public class WindowUI extends JFrame implements GameUI {
 		public void keyPressed(KeyEvent e) {
 			char c = e.getKeyChar();
 
-			if (Character.isLetter(c) && input.length() < 5) {
-				input += Character.toUpperCase(c);
-				displayTable();
-			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && input.length() > 0) {
-				input = input.substring(0, input.length() - 1);
-				displayTable();
-			} else if (e.getKeyCode() == KeyEvent.VK_ENTER && input.length() == 5) {
-				send = true;
+			if (game.getStatus() == GameStatus.UNFINISHED) {
+				if (Character.isLetter(c) && input.length() < 5) {
+					input += Character.toUpperCase(c);
+					displayTable();
+				} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE && input.length() > 0) {
+					input = input.substring(0, input.length() - 1);
+					displayTable();
+				} else if (e.getKeyCode() == KeyEvent.VK_ENTER && input.length() == 5) {
+					updateRow();
+				}
 			}
 		}
 
