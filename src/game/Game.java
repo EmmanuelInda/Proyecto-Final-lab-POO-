@@ -51,4 +51,8 @@ public class Game {
 			this.status = GameStatus.LOSE;
 		}
 	}
+
+	public static boolean isValidWord(String word) {
+		return WordProvider.isValidWord(word);
+	}
 }

@@ -53,4 +53,22 @@ public class WordProvider {
 
 		return count;
 	}
+
+	public static boolean isValidWord(String word) {
+		if (word == null || word.length() != 5) return false;
+
+		word = word.toLowerCase();
+		String filePath = "res/words/words.txt";
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+
+			while ((line = reader.readLine()) != null)
+				if (line.equalsIgnoreCase(word)) return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
 }

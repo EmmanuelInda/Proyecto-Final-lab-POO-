@@ -21,7 +21,6 @@ public class WindowUI extends JFrame implements GameUI {
 	private JPanel pnl_keyboard;
 
 	private String input;
-	private boolean send;
 
 	private Game game;
 
@@ -276,6 +275,8 @@ public class WindowUI extends JFrame implements GameUI {
 				input += key;
 				displayTable();
 			}
+
+			regainFocus();
 		}
 	}
 
@@ -286,6 +287,8 @@ public class WindowUI extends JFrame implements GameUI {
 				input = input.substring(0, input.length() - 1);
 				displayTable();
 			}
+
+			regainFocus();
 		}
 	}
 
@@ -293,9 +296,11 @@ public class WindowUI extends JFrame implements GameUI {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (input.length() == 5 && game.getStatus() == GameStatus.UNFINISHED) {
-				System.out.println("Enter");
+				if (!checkWord()) return;
 				updateRow();
 			}
+
+			regainFocus();
 		}
 	}
 
@@ -316,6 +321,7 @@ public class WindowUI extends JFrame implements GameUI {
 					input = input.substring(0, input.length() - 1);
 					displayTable();
 				} else if (e.getKeyCode() == KeyEvent.VK_ENTER && input.length() == 5) {
+					if (!checkWord()) return;
 					updateRow();
 				}
 			}
@@ -324,5 +330,21 @@ public class WindowUI extends JFrame implements GameUI {
 		@Override
 		public void keyReleased(KeyEvent e) {
 		}
+	}
+
+	private boolean checkWord() {
+		boolean isValidWord = game.isValidWord(input);
+
+		if (!isValidWord) {
+			JOptionPane.showMessageDialog(this, "Invalid word.", "Status", JOptionPane.INFORMATION_MESSAGE);
+		}
+
+		regainFocus();
+
+		return isValidWord;
+	}
+
+	private void regainFocus() {
+		this.requestFocusInWindow();
 	}
 }

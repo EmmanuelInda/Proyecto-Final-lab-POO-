@@ -64,14 +64,20 @@ public class ConsoleUI implements GameUI {
 		String input;
 
 		System.out.print("Word: ");
+		
+		boolean isValidWord;
 		do {
 			input = sc.next();
+			isValidWord = game.isValidWord(input);
 
 			if (input.length() != 5) {
 				System.out.println("\nInput error: Word must be 5 characters long.\n");
 				System.out.print("Word: ");
+			} else if (!isValidWord) {
+				System.out.println("\nWord not found.\n");
+				System.out.print("Word: ");
 			}
-		} while (input.length() != 5);
+		} while (input.length() != 5 || !isValidWord);
 
 		System.out.println("");
 		return input;
